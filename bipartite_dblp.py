@@ -49,8 +49,6 @@ with open("dblp-2019-04-01.xml", "r", encoding="utf8") as file:
                 else:
                     activated = 0
 
-
-
 end_import = time.time()
 print(end_import - start)
 print("Total author tags: {}".format(author_tags))
@@ -65,8 +63,7 @@ def extract_author_name(line):
     author = line[author_begin + 1:author_end]
     return author
 
-for i in range(len(author_lists)):
-    author_lists[i] = [extract_author_name(x) for x in author_lists[i]]
+author_lists = [[extract_author_name(x) for x in y] for y in author_lists]
 
 end_parse = time.time()
 total_titles = len(author_lists)
@@ -82,8 +79,7 @@ def get_cont_id(name, container):
     else:
         return container[name]
 
-for i in range(len(author_lists)):
-    author_lists = [get_cont_id(x, author_id) for x in author_lists[i]]
+author_lists = [[get_cont_id(x, author_id) for x in y] for y in author_lists]
 
 total_authors = len(author_id)
 title_lists = [[] for i in range(total_authors)]
