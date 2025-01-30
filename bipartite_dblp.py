@@ -1,48 +1,75 @@
 from parse import *
 from create_csr import create_csr
 import time
-docs = []
+from output_metis import output_metis
+
+author_lists = []
 
 mkultra_activation_code = "<inproceedings"
 mkultra_deactivation_code = "</inproceedings>"
-activated = False
+code2 = "<article"
+de_code2 = "</article>"
+informal = "publtype=\"informal\""
+activated = 0
 
 start = time.time()
+
+author_tags = 0
 
 with open("dblp-2019-04-01.xml", "r", encoding="utf8") as file:
     for line in file:
         if line.isspace():
             continue
-        if activated:
-            index = line.find(mkultra_deactivation_code)
+        if activated > 0:
+            deactivate = mkultra_deactivation_code
+            if activated == 2:
+                deactivate = de_code2
+            # check for appropriate close tag
+            index = line.find(deactivate)
             if index != -1:
-                activated = False
-            else:
-                docs[-1].append(line)
-        if not activated:
+                activated = 0
+            elif line.find("<author") != -1:
+                # only add lines with an author tag
+                author_lists[-1].append(line)
+                author_tags = author_tags + 1
+        if activated == 0:
             index = line.find(mkultra_activation_code)
+            # check for open inproceedings tag
             if index != -1:
-                activated = True
-                docs.append([])
+                activated = 1
+            if activated == 0:
+                #check for open article tag
+                index = line.find(code2)
+                if index != -1:
+                    activated = 2
+            if index > -1:
+                # check if document is not informal
+                if line[index:].find(informal) == -1:
+                    author_lists.append([])
+                else:
+                    activated = 0
 
-author_lists = []
+
 
 end_import = time.time()
 print(end_import - start)
+print("Total author tags: {}".format(author_tags))
 
-for doc in docs:
-    authors = []
-    for line in doc:
-        author_begin = line.find("<author>")
-        if author_begin != -1:
-            author_end = line.find("</author>")
-            author = line[author_begin + 8:author_end]
-            authors.append(author)
-    author_lists.append(authors)
+def extract_author_name(line):
+    # find start of open author tag
+    author_begin = line.find("<author")
+    # find end of open author tag
+    author_begin = line[author_begin:].find(">")
+    # find start of close author tag
+    author_end = line.find("</author>")
+    author = line[author_begin + 1:author_end]
+    return author
+
+for i in range(len(author_lists)):
+    author_lists[i] = [extract_author_name(x) for x in author_lists[i]]
 
 end_parse = time.time()
 total_titles = len(author_lists)
-print(total_titles)
 print(end_parse - end_import)
 
 author_id = {}
@@ -55,22 +82,21 @@ def get_cont_id(name, container):
     else:
         return container[name]
 
-for list in author_lists:
-    for i in range(len(list)):
-        author = list[i]
-        id = get_cont_id(author, author_id)
-        list[i] = id
+for i in range(len(author_lists)):
+    author_lists = [get_cont_id(x, author_id) for x in author_lists[i]]
 
 total_authors = len(author_id)
-print(total_authors)
 title_lists = [[] for i in range(total_authors)]
 
 for i in range(len(author_lists)):
     for id in author_lists[i]:
         title_lists[id].append(i + total_authors)
 
+print("total authors: {}".format(total_authors))
+print("total titles: {}".format(total_titles))
 adj_lists = title_lists + author_lists
 
 row_map, entries = create_csr(adj_lists, total_authors + total_titles)
 end = time.time()
 print(end - end_parse)
+output_metis(row_map, entries, "dblp_1.graph")
