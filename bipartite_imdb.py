@@ -1,6 +1,7 @@
 import csv
 import time
 from create_csr_from_edge_pairs import create_csr_from_edge_pairs
+from output_metis import output_metis
 
 ids = {}
 
@@ -61,3 +62,4 @@ row_map, entries = create_csr_from_edge_pairs(sources, dests, len(ids))
 
 end_create = time.time()
 print(end_create - parse_end)
+output_metis(row_map, entries, "imdb_1.graph")

@@ -6,6 +6,7 @@ from output_metis import output_metis
 tids = {}
 nids = {}
 title_filter = set()
+name_filter = set()
 
 def get_cont_id(name, container):
     total = len(container)
@@ -26,8 +27,28 @@ with open('title.basics.tsv', 'r', encoding="utf8") as file:
     for row in tsv_reader:
         title = row[0]
         tt = row[1]
-        if tt == "movie":
-            title_filter.add(title)
+        if tt != "movie":
+            continue
+        adult = row[4]
+        if adult != "0":
+            continue
+        year = row[5]
+        if year == "\\N":
+            continue
+        if int(year) <= 2000:
+            continue
+        title_filter.add(title)
+
+with open('name.basics.tsv', 'r', encoding="utf8") as file:
+    tsv_reader = csv.reader(file, delimiter='\t')
+    # skip header
+    next(tsv_reader)
+    for row in tsv_reader:
+        name = row[0]
+        death = row[3]
+        if death != "\\N":
+            continue
+        name_filter.add(name)
 
 with open('title.principals.tsv', 'r', encoding="utf8") as file:
     tsv_reader = csv.reader(file, delimiter='\t')
@@ -35,9 +56,14 @@ with open('title.principals.tsv', 'r', encoding="utf8") as file:
     next(tsv_reader)
     for row in tsv_reader:
         title = row[0]
+        order = int(row[1])
+        if order > 5:
+            continue
         if title not in title_filter:
             continue
         name = row[2]
+        if name not in name_filter:
+            continue
         role = row[3]
         if role != "actor" and role != "actress":
             continue
@@ -67,4 +93,4 @@ row_map, entries = create_csr_from_edge_pairs(sources, dests, len(nids))
 
 end_create = time.time()
 print(end_create - parse_end)
-output_metis(row_map, entries, "imdb_2.graph")
+output_metis(row_map, entries, "imdb_3.graph")

@@ -1,5 +1,5 @@
 from parse import *
-from create_csr import create_csr
+from create_csr_from_edge_pairs import create_csr_from_edge_pairs
 import time
 from output_metis import output_metis
 
@@ -82,17 +82,18 @@ def get_cont_id(name, container):
 author_lists = [tuple([get_cont_id(x, author_id) for x in y]) for y in author_lists]
 
 total_authors = len(author_id)
-title_lists = [[] for i in range(total_authors)]
 
-for i in range(len(author_lists)):
-    for id in author_lists[i]:
-        title_lists[id].append(i + total_authors)
+sources = []
+dests = []
 
-print("total authors: {}".format(total_authors))
-print("total titles: {}".format(total_titles))
-adj_lists = title_lists + author_lists
+for clique in author_lists:
+    for i in range(0, len(clique)):
+        for j in range(i + 1, len(clique)):
+            sources.append(clique[i])
+            dests.append(clique[j])
 
-row_map, entries = create_csr(adj_lists, total_authors + total_titles)
+row_map, entries = create_csr_from_edge_pairs(sources, dests, total_authors)
+
 end = time.time()
 print(end - end_parse)
-output_metis(row_map, entries, "dblp_1.graph")
+output_metis(row_map, entries, "dblp_2.graph")

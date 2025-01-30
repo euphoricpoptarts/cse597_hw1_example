@@ -1,3 +1,5 @@
+from itertools import chain
+
 def create_csr(adj, n):
     # remove duplicates
     adj = [tuple(set(x)) for x in adj]
@@ -6,14 +8,10 @@ def create_csr(adj, n):
 
     sum = 0
     for i in range(n + 1):
-        sum = sum + row_map[i]
+        val = row_map[i]
         row_map[i] = sum
+        sum = sum + val
 
-    entries = [0 for i in range(sum)]
-    j = 0
-    for x in adj:
-        for v in x:
-            entries[j] = v
-            j = j + 1
+    entries = list(chain.from_iterable(adj))
 
     return row_map, entries
