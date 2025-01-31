@@ -1,8 +1,9 @@
 from itertools import chain
 
 def create_csr(adj, n):
-    # remove duplicates
-    adj = [tuple(set(x)) for x in adj]
+    # remove duplicates 
+    # replace elements of adj in-place to save memory
+    adj[:] = [tuple(set(x)) for x in adj]
     row_map = [len(x) for x in adj]
     row_map.append(0)
 

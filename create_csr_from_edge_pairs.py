@@ -8,5 +8,8 @@ def create_csr_from_edge_pairs(sources, dests, n):
         v = dests[i]
         adj[u].append(v)
         adj[v].append(u)
+    # clear these lists to save memory
+    sources.clear()
+    dests.clear()
 
     return create_csr(adj, n)

@@ -55,10 +55,13 @@ with open('title.principals.tsv', 'r', encoding="utf8") as file:
 
 parse_end = time.time()
 
+total_ids = len(ids)
+ids.clear()
+
 print(parse_end - start)
 print(len(sources))
 
-row_map, entries = create_csr_from_edge_pairs(sources, dests, len(ids))
+row_map, entries = create_csr_from_edge_pairs(sources, dests, total_ids)
 
 end_create = time.time()
 print(end_create - parse_end)
