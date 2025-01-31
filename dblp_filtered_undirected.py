@@ -82,7 +82,7 @@ start = time.time()
 
 author_tags = 0
 
-with open("dblp-2019-04-01.xml", "r", encoding="utf8") as file:
+with open("dblp.xml", "r", encoding="utf8") as file:
     for line in file:
         if line.isspace():
             continue

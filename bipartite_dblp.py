@@ -16,7 +16,7 @@ start = time.time()
 
 author_tags = 0
 
-with open("dblp-2019-04-01.xml", "r", encoding="utf8") as file:
+with open("dblp.xml", "r", encoding="utf8") as file:
     for line in file:
         if line.isspace():
             continue
@@ -82,15 +82,17 @@ def get_cont_id(name, container):
 author_lists = [tuple([get_cont_id(x, author_id) for x in y]) for y in author_lists]
 
 total_authors = len(author_id)
-title_lists = [[] for i in range(total_authors)]
+publ_lists = [[] for i in range(total_authors)]
 
+# create publication lists for each author
 for i in range(len(author_lists)):
     for id in author_lists[i]:
-        title_lists[id].append(i + total_authors)
+        # add total_authors to i to create unique ids for titles
+        publ_lists[id].append(i + total_authors)
 
 print("total authors: {}".format(total_authors))
 print("total titles: {}".format(total_titles))
-adj_lists = title_lists + author_lists
+adj_lists = publ_lists + author_lists
 
 row_map, entries = create_csr(adj_lists, total_authors + total_titles)
 end = time.time()

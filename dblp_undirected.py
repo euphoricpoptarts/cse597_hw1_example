@@ -16,7 +16,7 @@ start = time.time()
 
 author_tags = 0
 
-with open("dblp-2019-04-01.xml", "r", encoding="utf8") as file:
+with open("dblp.xml", "r", encoding="utf8") as file:
     for line in file:
         if line.isspace():
             continue
@@ -86,6 +86,7 @@ total_authors = len(author_id)
 sources = []
 dests = []
 
+# create edge for each vertex pair in clique
 for clique in author_lists:
     for i in range(0, len(clique)):
         for j in range(i + 1, len(clique)):

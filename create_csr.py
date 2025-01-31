@@ -7,6 +7,7 @@ def create_csr(adj, n):
     row_map = [len(x) for x in adj]
     row_map.append(0)
 
+    # exclusive prefix sum over row_map
     sum = 0
     for i in range(n + 1):
         val = row_map[i]

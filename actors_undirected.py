@@ -15,6 +15,7 @@ def get_cont_id(name, container):
     else:
         return container[name]
 
+# lists of actors/actresses in each movie
 cliques = []
 
 start = time.time()
@@ -56,6 +57,7 @@ cliques = [list(x) for x in cliques]
 sources = []
 dests = []
 
+# create edge for each vertex pair in clique
 for clique in cliques:
     for i in range(0, len(clique)):
         for j in range(i + 1, len(clique)):

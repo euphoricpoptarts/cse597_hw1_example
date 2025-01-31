@@ -5,6 +5,7 @@ from output_metis import output_metis
 
 ids = {}
 
+# convert string id to integer id
 def get_cont_id(name):
     global ids
     total = len(ids)
@@ -14,6 +15,7 @@ def get_cont_id(name):
     else:
         return ids[name]
 
+# each edge (u, v) is represented as sources[x] = u; dests[x] = v for some index x
 sources = []
 dests = []
 
@@ -56,6 +58,8 @@ with open('title.principals.tsv', 'r', encoding="utf8") as file:
 parse_end = time.time()
 
 total_ids = len(ids)
+# clear ids mapping to save memory
+# could also export this to file for later usage
 ids.clear()
 
 print(parse_end - start)
