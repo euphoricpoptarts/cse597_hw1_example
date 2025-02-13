@@ -90,8 +90,9 @@ dests = []
 for clique in author_lists:
     for i in range(0, len(clique)):
         for j in range(i + 1, len(clique)):
-            sources.append(clique[i])
-            dests.append(clique[j])
+            if clique[i] != clique[j]:
+                sources.append(clique[i])
+                dests.append(clique[j])
 
 row_map, entries = create_csr_from_edge_pairs(sources, dests, total_authors)
 
